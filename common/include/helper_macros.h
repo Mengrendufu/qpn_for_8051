@@ -14,6 +14,7 @@
 **/
 #define Q_DOWN_CAST(type_, unit_)  ((type_)(unit_))
 #define Q_UP_CAST(type_, unit_)    ((type_)(unit_))
+#define Q_CAST(type_, unit_)       ((type_)(unit_))
 
 /**
 ******************************************************************************
@@ -68,19 +69,6 @@
 /* some expand usages from the basic ones (This is not good) ---------------*/
 #define PREFIXED_NAME(prefix, name)   prefix ## _ ## name
 #define NAME_SUFFIXED(name, suffix)   name ## _ ## suffix
-
-/*
-******************************************************************************
-                            pointer <==> uint
-******************************************************************************
-*/
-#define UINT2PTR(ptype_, uint_) \
-    ((ptype_)((uint_)))
-
-// Q_PTR_SIZE_PADDING_TYPE is pointer's length equal uint type,
-// platform specific
-#define PTR2UINT(p_) \
-    ((Q_PTR_SIZE_PADDING_TYPE)((p_)))
 
 /*
 ******************************************************************************

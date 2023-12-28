@@ -3,7 +3,7 @@
                                 Include files
 ******************************************************************************
 **/
-#include "stdint_.h"
+#include "cpu_port.h"
 #include "qmpool.h"
 
 /**

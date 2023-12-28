@@ -7,15 +7,6 @@
 ******************************************************************************
 **/
 
-
-/**
-******************************************************************************
-                            Used inside
-******************************************************************************
-**/
-#define M_INT_DISABLE() QF_INT_DISABLE()
-#define M_INT_ENABLE()  QF_INT_ENABLE()
-
 /**
 ******************************************************************************
                             M_Fsm super class
@@ -51,7 +42,7 @@ void M_Fsm_ctor(M_Fsm * const me,
     ((me_)->run_is_ready)
 #define M_Fsm_run_set_ready(me_)  \
     ((me_)->run_is_ready = 0xFF)
-#define M_Fsm_runClear(me_)  \
+#define M_Fsm_run_clear(me_)  \
     ((me_)->run_is_ready = 0x00)
 #define M_Fsm_tick(me_,  \
     perirod_)  \
@@ -71,14 +62,14 @@ do {  \
 ******************************************************************************
 **/
 #define M_TICKS_PERIOD   0xFFFF
-#define M_ticks_run_period(ticks_,  \
+#define M_ticks_run_period(run_ticks_,  \
     perirod_)  \
 do { \
-    if ((ticks_) == (perirod_)) { \
-        (ticks_) = 0; \
+    if ((run_ticks_) == (perirod_)) { \
+        (run_ticks_) = 0; \
     } \
     else { \
-        ++(ticks_); \
+        ++(run_ticks_); \
     } \
 } while (0)
 

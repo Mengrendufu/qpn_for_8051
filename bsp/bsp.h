@@ -15,9 +15,9 @@ void BSP_ledOff(void);
 
 /**
 ******************************************************************************
-            some more application modules in addition to AOs
+                            M_Fsms or others
 ******************************************************************************
 **/
-// #include "debug_printer.h"
+#include "printer_debug.h"
 
 #endif /* BSP_H */

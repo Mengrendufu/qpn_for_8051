@@ -9,46 +9,55 @@ Modified based on ```qpn v6.9.0```
 ## Rebuilding the qpn specific for the 8051
 
 ```c
-~/qpn
+~/qpn_blinky
 |-- application
-|	|-- application.h
-|	|-- blinky.c
-|	|-- blinky.h
-|	|-- main.c
-|	|-- qpn_conf.h
+|   |-- application.h
+|   |-- blinky.c
+|   |-- blinky.h
+|   |-- main.c
+|   |-- qpn_conf.h
 |-- bsp
-|	|-- bsp.c
-|	|-- bsp.h
+|   |-- bsp.c
+|   |-- bsp.h
+|   |-- printer_debug.c
+|   |-- printer_debug.h
 |-- common
-|	|-- include
-|	|	|-- helper_macros.h
-|	|	|-- qmpool.h
-|	|	|-- queue.h
-|	|-- src
-|	|   |-- qmpool
-|	|	|  |-- qmp_get.c
-|	|	|  |-- qmp_init.c
-|	|	|  |-- qmp_put.c
-|	|	|-- queue
-|	|	|  |-- queue.c
-|	|-- common.h
+|   |-- include
+|   |   |-- helper_macros.h
+|   |   |-- m_fsm.h
+|   |   |-- printer.h
+|   |   |-- qmpool.h
+|   |   |-- queue.h
+|   |-- src
+|   |   |-- m_fsm
+|   |   |   |-- m_fsm.c
+|   |   |-- printer
+|   |   |   |-- printer.c
+|   |   |-- qmpool
+|   |   |   |-- qmp_get.c
+|   |   |   |-- qmp_init.c
+|   |   |   |-- qmp_put.c
+|   |   |-- queue
+|   |   |   |-- queue.c
+|   |-- common.h
 |-- include
-|	|-- qassert.h
-|	|-- qepn.h
-|	|-- qfn.h
-|	|-- qpn.h
-|	|-- qvn.h
+|   |-- qassert.h
+|   |-- qepn.h
+|   |-- qfn.h
+|   |-- qpn.h
+|   |-- qvn.h
 |-- ports
-|	|-- qfn_port.c
-| 	|-- qfn_port.h
-| 	|-- stdbool_.h
-| 	|-- stdint_.h
+|   |-- cpu_port.h
+|   |-- m_fsm_port.h
+|   |-- qfn_port.c
+|   |-- qfn_port.h
 |-- src
-|	|-- qfn
-|	|	|-- qepn.c
-|	|	|-- qfn.c
-|	|-- qvn
-|	|	|-- qvn.c
+|   |-- qfn
+|   |   |-- qepn.c
+|   |   |-- qfn.c
+|   |-- qvn
+|   |   |-- qvn.c
+|-- README.md
 ```
 
 ## How me post and process events
@@ -82,13 +91,30 @@ void Blinky_Evt_post(Blinky *me,
     // other codes ...
     case BLINKY_SIG: {
         if (Q_DOWN_CAST(Blinky_Evt *, Q_EVT(me))->blink_on_off) {
-            DEBUG_PRINTF("LedOn\n");
+            //            0123456789012----
+            PRINTF_DEBUG("LedOn        \r\n");
         }
         else {
-            DEBUG_PRINTF("LedOff\n");
+            //            0123456789012----
+            PRINTF_DEBUG("LedOff       \r\n");
         }
 
         break;
     }
     // other codes ...
+```
+
+### The Printer_debug
+
+How to log out fucking aggressively.
+
+```c
+//------------0123456789012----
+PRINTF_DEBUG("Hello, World!\r\n");
+
+PRINTF_DEBUG_START()
+//-------------0123456789012----
+PRINTF_DEBUG_("Hello, World!\r\n");
+PRINTF_DEBUG_ASSIGN(12) = 0x88;
+PRINTF_DEBUG_END()
 ```

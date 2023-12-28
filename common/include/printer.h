@@ -3,6 +3,16 @@
 
 /**
 ******************************************************************************
+                                Helper macros
+******************************************************************************
+**/
+#define PRINTER_CEIL(x, y)  \
+    (((x) - 1U) / (y) + 1U)
+#define PRINTER_DIM(array_)  \
+    (sizeof(array_) / sizeof((array_)[0]))
+
+/**
+******************************************************************************
                                     ms
 ******************************************************************************
 **/
@@ -20,6 +30,7 @@ typedef struct Printer {
     QMPool frame_pool;
     /* the print queue, which is circular */
     CircularQueue tran_queue;
+
     /* the frame pointer used in the FSM and the ISR */
     uint8_t *tran_frame;
     /* the count that indicates the current remaining tran byte */
@@ -40,7 +51,7 @@ typedef struct Printer {
 ******************************************************************************
 **/
 enum Printer_State {
-    Printer_idle,
+    Printer_idle,  // init state
     Printer_busy,
 
     PRINTER_MAX_STATE
@@ -52,17 +63,24 @@ enum Printer_State {
 ******************************************************************************
 **/
 void Printer_ctor(Printer *me,
-    uint8_t *frame_pool_sto,
+    void *frame_pool_sto,
     uint8_t frame_pool_size,
-    uint8_t *tran_queue_sto,
+    uint8_t frame_pool_unit_size,
+    void *tran_queue_sto,
     uint8_t tran_queue_size,
     uint8_t printer_idx,
     uint8_t printer_msg_len);
 void Printer_run(Printer *me);
 void Printer_Fsm_Run(Printer *me);
 /**
-* Handler in the ISR.
-*/
+******************************************************************************
+                            Handler in the ISR.
+    called:
+        // uart tx isr ...
+        Printer_ISR_call(&Printer_debug);
+        // uart tx isr ...
+******************************************************************************
+**/
 void Printer_ISR_call(Printer *me);
 
 /**
@@ -73,22 +91,43 @@ void Printer_memcpy(uint8_t *from,
     uint8_t length);
 
 /**
+* Fill the tran queue of specific Printer AO ...
+*/
+void Printer_printf(Printer *me,
+    uint8_t *message);
+
+/**
 ******************************************************************************
                             Printer tran_queue
+    Choose a queue class to use.
 ******************************************************************************
 **/
-#define PRINTER_EN_QUEUE(me_, enQueueElmt_) do { \
-    CIRQUEUE_ENQ_U8P(&(me_)->tranQueue, \
-        (uint8_t *)(enQueueElmt_)); \
+/**
+******************************************************************************
+    Trace of allocated frame: QMPool ==> fill content ==> CircularQueue
+                                                ^
+                                    user msg____|
+******************************************************************************
+**/
+#define PRINTER_EN_QUEUE(me_,  \
+    alloc_frame_)  \
+do {  \
+    CircularQueue_put(&((me_)->tran_queue),  \
+        &(alloc_frame_));  \
 } while (0)
-
-#define PRINTER_DE_QUEUE(me_) do { \
-    CIRQUEUE_DEQ_U8P(&(me_)->tranQueue, \
-        &(me_)->tranFrame); \
+/**
+******************************************************************************
+    Get frame: CircularQueue ==> (me_)->tran_frame
+******************************************************************************
+**/
+#define PRINTER_DE_QUEUE(me_)  \
+do {  \
+    CircularQueue_get(&((me_)->tran_queue),  \
+        &((me_)->tran_frame));  \
 } while (0)
 
 #define PRINTER_QUEUE_EMPTY(me_)  \
-    CIRQUEUE_EMPTY(&(me_)->tranQueue)
+    CircularQueue_is_empty(&((me_)->tran_queue))
 
 /**
 ******************************************************************************
@@ -97,18 +136,10 @@ void Printer_memcpy(uint8_t *from,
 ******************************************************************************
 **/
 /**
-* Load data to the buffer due to the uartNum.
+* Load data to the buffer due to the me->printer_idx.
 *
 * Implementation depends on the chip peripheral.
-*
-* param uint8_t frameSizePreSet as a setting value.
 */
-void Printer_load_data2uart(Printer *me);
-
-/**
-* Fill the tran queue of specific Printer AO ...
-*/
-void Printer_printf(Printer *me,
-    uint8_t *message);
+void Printer_data_upload(Printer *me);
 
 #endif

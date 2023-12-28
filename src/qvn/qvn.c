@@ -41,7 +41,7 @@ void QF_run(void) {
         (1U <= QF_maxActive_) && (QF_maxActive_ <= 32U));
 #endif
 
-   /* set priorities all registered active objects... */
+    /* set priorities all registered active objects... */
     for (p = 1U; p <= QF_maxActive_; ++p) {
         a = QF_ROM_ACTIVE_GET_(p);
 
@@ -108,7 +108,7 @@ void QF_run(void) {
             /* empty queue? */
             if (a->nUsed == 0U) {
                 /* clear the bit corresponding to 'p' */
-                QF_readySet_ &= (Q_ReadySet )(~(1U << (p - 1U)));
+                QF_readySet_ &= (~(((Q_ReadySet)(1U)) << (p - 1U)));
             }
         }
         else {

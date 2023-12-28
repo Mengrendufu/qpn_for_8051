@@ -1,31 +1,33 @@
 #ifndef QFN_PORT_H
 #define QFN_PORT_H
 
-/*
+/**
 ******************************************************************************
-                            8051 platform
+                                    cpu port
 ******************************************************************************
-*/
-#include "Config.h"
-
-#define QF_INT_DISABLE()  do {  \
-    EA = 0;  \
-} while (0U)
-#define QF_INT_ENABLE()  do {  \
-    EA = 1;  \
-} while (0U)
-#define Q_ROM code
+**/
+#include "cpu_port.h"
 
 /**
 ******************************************************************************
-                    The size of pointer of the platform
+                                    qfn
 ******************************************************************************
 **/
-#define Q_PTR_SIZE_PADDING_TYPE  3U
+#define QF_INT_DISABLE()  \
+do {  \
+    CPU_INT_DISABLE();  \
+} while (false)
+
+#define QF_INT_ENABLE()  \
+do {  \
+    CPU_INT_ENABLE();  \
+} while (false)
+
+#define Q_ROM code
 
 /*
 ******************************************************************************
-        Components used by both qpn framework and user applications
+                            common packages
 ******************************************************************************
 */
 #include "common.h"
@@ -60,8 +62,7 @@ extern QMPool g_sys_evt_pool;
 #define SYS_EVT_POOL_SIZE  32U
 #define SYS_EVT_POOL_UNIT_SIZE  6U  // Exact width of a evt in the pool.
 typedef struct SysEvtBlock {
-    void *size_padding_unit[Q_CEIL(SYS_EVT_POOL_UNIT_SIZE,
-        Q_PTR_SIZE_PADDING_TYPE)];
+    void *size_padding_unit[Q_CEIL(SYS_EVT_POOL_UNIT_SIZE, Q_PTR_SIZE)];
 } SysEvtBlock;
 extern QF_MPOOL_EL(SysEvtBlock) g_sys_evt_pool_sto[SYS_EVT_POOL_SIZE];
 

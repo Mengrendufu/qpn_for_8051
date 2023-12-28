@@ -4,7 +4,7 @@
     Type dependencies.
 ******************************************************************************
 **/
-#include "stdint_.h"
+#include "cpu_port.h"
 #include "queue.h"
 
 /**

@@ -19,6 +19,9 @@ enum BlinkySignals {
     MAX_SIG  /* the last signal */
 };
 
+// event queue size
+#define BLINKY_EVT_QUEUE_SIZE  10U
+
 /**
 ******************************************************************************
                         AO class (declared by the QM)

@@ -4,7 +4,7 @@
 #include "application.h"
 
 /* Local-scope objects -----------------------------------------------------*/
-static QEvt *l_blinky_q_sto[5]; /* Event queue storage for Blinky */
+static QEvt *l_blinky_q_sto[BLINKY_EVT_QUEUE_SIZE];
 
 /* QF_active[] array defines all active object control blocks --------------*/
 QActiveCB const Q_ROM QF_active[] = {

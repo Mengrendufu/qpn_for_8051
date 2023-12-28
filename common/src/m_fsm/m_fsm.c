@@ -3,8 +3,7 @@
                                 Includes
 ******************************************************************************
 **/
-#include "stdint_.h"
-#include "queue.h"
+#include "m_fsm_port.h"
 #include "m_fsm.h"
 
 /**
