@@ -24,8 +24,11 @@ QF_MPOOL_EL(SysEvtBlock) g_sys_evt_pool_sto[SYS_EVT_POOL_SIZE];
 */
 uint_fast8_t Q_LOG2(Q_ReadySet x) {
     static uint8_t const log2LUT[16] = {
-        0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
-        4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
+        0U,                             /* [0b0000] */
+        1U,                             /* [0b0001] */
+        2U, 2U,                         /* [0b001x] */
+        3U, 3U, 3U, 3U,                 /* [0b01xx] */
+        4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U  /* [0b1xxx] */
     };
     uint_fast8_t n;
     Q_ReadySet tmp;
