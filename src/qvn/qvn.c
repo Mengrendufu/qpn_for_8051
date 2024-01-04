@@ -79,8 +79,8 @@ void QF_run(void) {
                                 event dispatch
         **********************************************************************
         */
-        if (QF_readySet_ != 0U) {
-            p = QF_LOG2(QF_readySet_);
+        if (QSet_is_not_empty(&QF_readySet_)) {
+            p = QSet_find_max(&QF_readySet_);
             acb = &QF_active[p];
             a = QF_ROM_ACTIVE_GET_(p);
 
@@ -108,7 +108,8 @@ void QF_run(void) {
             /* empty queue? */
             if (a->nUsed == 0U) {
                 /* clear the bit corresponding to 'p' */
-                QF_readySet_ &= (~(((Q_ReadySet)(1U)) << (p - 1U)));
+                QSet_remove(&QF_readySet_,
+                    p);
             }
         }
         else {

@@ -79,9 +79,10 @@ void QHsm_init_(QHsm * const me) {
     /*----------------------------------------------------------------------*/
     static QEvt global_evt_init_;
 
-    p_global_evt_dispatch_ = &global_evt_init_;
+    // Equivalent to post event with Q_INIT_SIG to SMs.
+    Q_EVT(me) = &global_evt_init_;
+
     t = me->state;
-    ip = 0;
 
     /** @pre the virtual pointer must be initialized, the top-most initial
     * transition must be initialized, and the initial transition must not
@@ -98,6 +99,7 @@ void QHsm_init_(QHsm * const me) {
 
     /* drill down into the state hierarchy with initial transitions... */
     do {
+        ip = 0;
         path[0] = me->temp;
         Q_SIG(me) = QEP_EMPTY_SIG_;
         (void)(*me->temp)(me);

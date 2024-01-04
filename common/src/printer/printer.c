@@ -7,7 +7,6 @@
 ******************************************************************************
 **/
 #include "m_fsm_port.h"
-#include "m_fsm.h"
 #include "qmpool.h"
 #include "queue.h"
 #include "printer.h"
@@ -18,9 +17,11 @@
 ******************************************************************************
 **/
 void Printer_ctor(Printer *me,
+    void *frame_pool,
     void *frame_pool_sto,
-    uint8_t frame_pool_size,
-    uint8_t frame_pool_unit_size,
+    uint16_t frame_pool_sto_size,
+    uint8_t frame_pool_block_size,
+    void *tran_queue,
     void *tran_queue_sto,
     uint8_t tran_queue_size,
     uint8_t printer_idx,
@@ -37,13 +38,16 @@ void Printer_ctor(Printer *me,
     me->ISR_frame_tran_is_done = 0x00;
 
     // init dynamic attrs
-    QMPool_init(&me->frame_pool,
+    QMPool_init(frame_pool,
         frame_pool_sto,
-        frame_pool_size,
-        frame_pool_unit_size);
-    CircularQueue_init(&me->tran_queue,
+        frame_pool_sto_size,
+        frame_pool_block_size);
+    me->frame_pool = frame_pool;
+
+    CircularQueue_init(tran_queue,
         tran_queue_sto,
         tran_queue_size);
+    me->tran_queue = tran_queue;
 
     // init polymorphism
     me->printer_idx = printer_idx;
@@ -65,11 +69,11 @@ void Printer_run(Printer *me) {
 void Printer_Fsm_Run(Printer *me) {
     switch (me->super.state) {
         case Printer_idle: {
-            entry_exec_start_(&me->super)
+            M_FSM_ENTRY_EXEC_START_(&me->super)
                 me->super.ticks = 0;
-            entry_exec_end_(&me->super)
+            M_FSM_ENTRY_EXEC_END_(&me->super)
 
-            state_process_begin_(me)
+            M_FSM_STATE_PROCESS_BEGIN_(me)
             M_ticks_run_period(me->super.ticks,
                 M_TICKS_PERIOD);
 
@@ -91,31 +95,31 @@ void Printer_Fsm_Run(Printer *me) {
 
                 --me->tran_frame_cnt;
 
-                state_tran(Printer_busy);
+                M_Fsm_state_tran(Printer_busy);
             }
             M_INT_ENABLE();
-            state_process_end_(me)
+            M_FSM_STATE_PROCESS_END_(me)
 
-            exit_exec_start_(&me->super)
-            exit_exec_end_(&me->super)
+            M_FSM_EXIT_EXEC_START_(&me->super)
+            M_FSM_EXIT_EXEC_END_(&me->super)
 
             break;
         }
         case Printer_busy: {
-            entry_exec_start_(&me->super)
-            entry_exec_end_(&me->super)
+            M_FSM_ENTRY_EXEC_START_(&me->super)
+            M_FSM_ENTRY_EXEC_END_(&me->super)
 
-            state_process_begin_(me)
+            M_FSM_STATE_PROCESS_BEGIN_(me)
             /* Take the flag as an event here */
             if (me->ISR_frame_tran_is_done) {
                 me->ISR_frame_tran_is_done = 0x00;
                 /* recv the event and tran the state */
-                state_tran(Printer_idle);
+                M_Fsm_state_tran(Printer_idle);
             }
-            state_process_end_(me)
+            M_FSM_STATE_PROCESS_END_(me)
 
-            exit_exec_start_(&me->super)
-            exit_exec_end_(&me->super)
+            M_FSM_EXIT_EXEC_START_(&me->super)
+            M_FSM_EXIT_EXEC_END_(&me->super)
 
             break;
         }
@@ -140,8 +144,8 @@ void Printer_ISR_call(Printer *me) {
             --me->tran_frame_cnt;
             if (me->tran_frame_cnt == 0U) {
                 /* execute the gc procedure */
-                QMPool_put(&me->frame_pool,
-                    (void *)me->tran_frame);
+                QMPool_put(me->frame_pool,
+                    me->tran_frame);
 
                 /**
                 * Set the flag to tell the AO to tran the state...
@@ -153,8 +157,8 @@ void Printer_ISR_call(Printer *me) {
     // frame length is 1
     else {
         /* execute the gc procedure */
-        QMPool_put(&me->frame_pool,
-            (void *)me->tran_frame);
+        QMPool_put(me->frame_pool,
+            me->tran_frame);
 
         /**
         * Set the flag to tell the AO to tran the state...
@@ -188,7 +192,7 @@ void Printer_printf(Printer *me,
     /**
     * Get the frame from pool.
     */
-    frame = (uint8_t *)QMPool_get(&me->frame_pool);
+    frame = (uint8_t *)QMPool_get(me->frame_pool);
 
     // if valid
     if (frame) {

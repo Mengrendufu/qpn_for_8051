@@ -19,5 +19,6 @@ void BSP_ledOff(void);
 ******************************************************************************
 **/
 #include "printer_debug.h"
+#include "receiver_debug.h"
 
 #endif /* BSP_H */

@@ -27,12 +27,12 @@ uint_fast8_t QF_maxActive_;
 // use Q_ReadySet instead
 // uint_fast8_t volatile QF_readySet_;
 
-#ifndef QF_LOG2
-    uint8_t const Q_ROM QF_log2Lkup[16] = {
-        0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
-        4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
-    };
-#endif /* QF_LOG2 */
+// #ifndef QF_LOG2
+//     uint8_t const Q_ROM QF_log2Lkup[16] = {
+//         0U, 1U, 2U, 2U, 3U, 3U, 3U, 3U,
+//         4U, 4U, 4U, 4U, 4U, 4U, 4U, 4U
+//     };
+// #endif /* QF_LOG2 */
 
 /****************************************************************************/
 /**
@@ -126,8 +126,8 @@ bool QActive_postX_(QActive * const me,
             if (me->nUsed == 1U) {
 
                 /* set the corresponding bit in the ready set */
-                QF_readySet_ |= ((Q_ReadySet)1) << (me->prio - 1U);
-
+                QSet_insert(&QF_readySet_,
+                    me->prio);
             }
         }
         else { /* can not post the event */
@@ -208,7 +208,8 @@ bool QActive_postXISR_(QActive * const me,
             /* is this the first event? */
             if (me->nUsed == 1U) {
                 /* set the bit */
-                QF_readySet_ |= ((Q_ReadySet)1) << (me->prio - 1U);
+                QSet_insert(&QF_readySet_,
+                    me->prio);
             }
         }
         else {
@@ -244,7 +245,8 @@ void QF_init(uint_fast8_t maxActive) {
         (1U < maxActive) && (maxActive <= 33U));
     QF_maxActive_ = (uint_fast8_t)maxActive - 1U;
 
-    QF_readySet_ = 0U;
+    // QF_readySet_ = 0U;
+    QSet_set_empty(&QF_readySet_);
 
     // init the sys event pool
     QMPool_init(&g_sys_evt_pool,

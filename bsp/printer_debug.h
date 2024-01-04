@@ -7,6 +7,8 @@
     How long, how big, what is the size of yours.
 ******************************************************************************
 **/
+#define PRINTER_DEBUG_IDX  System_Idx_Uart_0
+
 #define PRINTER_DEBUG_MSG_LEN          15U
 #define PRINTER_DEBUG_FRAME_POOL_SIZE  16U
 #define PRINTER_DEBUG_TRAN_QUEUE_SIZE  PRINTER_DEBUG_FRAME_POOL_SIZE
@@ -46,8 +48,8 @@ void Printer_debug_ctor(Printer *me);
 /**
 ******************************************************************************
     Only do this:
-//------------0123456789012----
-PRINTF_DEBUG("Hello, World!\r\n");
+//------------0123456789012---
+PRINTF_DEBUG("Hello, World! \n");
 ******************************************************************************
 **/
 #define PRINTF_DEBUG(msg_)  \
@@ -60,8 +62,8 @@ do {  \
 ******************************************************************************
     We do this:
 PRINTF_DEBUG_START()
-//-------------0123456789012----
-PRINTF_DEBUG_("Hello, World!\r\n");
+//-------------0123456789012---
+PRINTF_DEBUG_("Hello, World! \n");
 PRINTF_DEBUG_ASSIGN(12) = 0x88;
 PRINTF_DEBUG_END()
 ******************************************************************************
@@ -72,7 +74,7 @@ do {
 
 #define PRINTF_DEBUG_(msg_)  \
 do {  \
-    Printer_memcpy((uint8_t *)(msg_),  \
+    Printer_memcpy((msg_),  \
         Printer_debug_tmp_frame,  \
         Printer_debug.printer_msg_len);  \
 } while (0U)
@@ -85,4 +87,4 @@ do {  \
         Printer_debug_tmp_frame);  \
 } while (0U);
 
-#endif
+#endif  /* printer_debug_h_ */

@@ -14,14 +14,18 @@
                                 qepn
 ******************************************************************************
 */
-// #define Q_PARAM_SIZE
+
 
 /*
 ******************************************************************************
                                 qfn
 ******************************************************************************
 */
-#define MAX_ACTIVE  16U  // Work with Q_LOG2()
+#define MAX_ACTIVE  16U  /* max: 64U */
+
+#if (MAX_ACTIVE > 64U)
+    #error MAX_ACTIVE exceeds the maximum of 64U;
+#endif
 
 #define QF_TIMEEVT_CTR_SIZE  2U
 #define QF_MAX_TICK_RATE     4U

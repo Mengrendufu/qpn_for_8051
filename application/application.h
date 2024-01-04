@@ -19,4 +19,4 @@ enum AppSignals {
 **/
 #include "blinky.h"
 
-#endif
+#endif  /* application_h_ */

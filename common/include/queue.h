@@ -93,4 +93,4 @@ empty before accessing the content.
 void CircularQueue_get(CircularQueue *me,
     void *elem_get);
 
-#endif
+#endif  /* queue_h_ */

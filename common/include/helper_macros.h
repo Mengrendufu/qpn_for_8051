@@ -18,6 +18,21 @@
 
 /**
 ******************************************************************************
+                    Cyclic counter operation with reset.
+    Init: me->tick = 0U;
+    Count: CYC_RST_COUNTER(me->tick, 1U, 10U); // This will count 1U ~ 10U
+    Reference: if (me->tick % 3U == 0U) { do someting }
+******************************************************************************
+**/
+#define CYC_RST_COUNTER(cnt_,  \
+    start_,  \
+    end_)  \
+    ((cnt_) >= (end_))  \
+    ? ((cnt_) = start_)  \
+    : (++(cnt_))
+
+/**
+******************************************************************************
                                 Math algorithm.
 ******************************************************************************
 **/
@@ -83,4 +98,4 @@
 // #define COUNT_ARGS_IMPL(...)  COUNT_ARGS_N(__VA_ARGS__)
 // #define COUNT_ARGS(...)  COUNT_ARGS_IMPL(__VA_ARGS__, COUNT_ARGS_SEQ())
 
-#endif
+#endif  /* helper_macros_h_ */

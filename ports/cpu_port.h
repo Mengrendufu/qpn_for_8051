@@ -21,10 +21,8 @@ such types.
 ******************************************************************************
 **/
 typedef unsigned char bool;
-enum STAND_BOOL_ {
-    false = (bool)(0U),
-    true  = (bool)(1U)
-};
+#define false  ((bool)0U)
+#define true   (!false)
 
 // fast, fast, fast
 typedef signed char int8_t;
@@ -91,6 +89,16 @@ typedef unsigned long int uint_fast32_t;
 
 /**
 ******************************************************************************
+                            Clear chip Watchdog.
+******************************************************************************
+**/
+#define WATCHDOG_CLEAR()  \
+do {  \
+    WDT_CTRL = 7;  \
+} while (false)
+
+/**
+******************************************************************************
                         interrupt disable/enable
 ******************************************************************************
 **/
@@ -114,8 +122,29 @@ enum System_Idx_Uart {
     System_Idx_Uart_0 = (uint8_t)0U,
     System_Idx_Uart_1,
     System_Idx_Uart_2,
+    System_Idx_Uart_3,
+    System_Idx_Uart_4,
+    System_Idx_Uart_5,
 
     MAX_PRINTER_IDX_UART
 };
 
-#endif
+#define SYSTEM_IDX_UART_0_TX_BUF  UART0_BUF
+#define SYSTEM_IDX_UART_0_RX_BUF  UART0_BUF
+
+#define SYSTEM_IDX_UART_1_TX_BUF
+#define SYSTEM_IDX_UART_1_RX_BUF
+
+#define SYSTEM_IDX_UART_2_TX_BUF
+#define SYSTEM_IDX_UART_2_RX_BUF
+
+#define SYSTEM_IDX_UART_3_TX_BUF
+#define SYSTEM_IDX_UART_3_RX_BUF
+
+#define SYSTEM_IDX_UART_4_TX_BUF
+#define SYSTEM_IDX_UART_4_RX_BUF
+
+#define SYSTEM_IDX_UART_5_TX_BUF
+#define SYSTEM_IDX_UART_5_RX_BUF
+
+#endif  /* cpu_port_h_ */

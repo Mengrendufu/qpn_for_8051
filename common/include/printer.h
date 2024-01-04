@@ -27,9 +27,9 @@ typedef struct Printer {
     M_Fsm super;
 
     /* the static memory pool ... */
-    QMPool frame_pool;
+    QMPool *frame_pool;
     /* the print queue, which is circular */
-    CircularQueue tran_queue;
+    CircularQueue *tran_queue;
 
     /* the frame pointer used in the FSM and the ISR */
     uint8_t *tran_frame;
@@ -63,9 +63,11 @@ enum Printer_State {
 ******************************************************************************
 **/
 void Printer_ctor(Printer *me,
+    void *frame_pool,
     void *frame_pool_sto,
-    uint8_t frame_pool_size,
-    uint8_t frame_pool_unit_size,
+    uint16_t frame_pool_sto_size,
+    uint8_t frame_pool_block_size,
+    void *tran_queue,
     void *tran_queue_sto,
     uint8_t tran_queue_size,
     uint8_t printer_idx,
@@ -112,7 +114,7 @@ void Printer_printf(Printer *me,
 #define PRINTER_EN_QUEUE(me_,  \
     alloc_frame_)  \
 do {  \
-    CircularQueue_put(&((me_)->tran_queue),  \
+    CircularQueue_put((me_)->tran_queue,  \
         &(alloc_frame_));  \
 } while (0)
 /**
@@ -122,12 +124,12 @@ do {  \
 **/
 #define PRINTER_DE_QUEUE(me_)  \
 do {  \
-    CircularQueue_get(&((me_)->tran_queue),  \
+    CircularQueue_get((me_)->tran_queue,  \
         &((me_)->tran_frame));  \
 } while (0)
 
 #define PRINTER_QUEUE_EMPTY(me_)  \
-    CircularQueue_is_empty(&((me_)->tran_queue))
+    CircularQueue_is_empty((me_)->tran_queue)
 
 /**
 ******************************************************************************
@@ -142,4 +144,4 @@ do {  \
 */
 void Printer_data_upload(Printer *me);
 
-#endif
+#endif  /* printer_h_ */

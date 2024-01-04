@@ -59,7 +59,7 @@ void QF_onStartup(void) {
 				Static info when the framework is ready to run
 	**************************************************************************
 	**/
-	QF_INT_DISABLE();
+	QF_INT_DISABLE();  // enter critical section
 
 	//            0123456789012----
 	PRINTF_DEBUG("Constructors \r\n");
@@ -84,20 +84,20 @@ void QF_onStartup(void) {
 	PRINTF_DEBUG_START()
 	//             0123456789012----
 	PRINTF_DEBUG_("PFP:         \r\n");
-	PRINTF_DEBUG_ASSIGN(4) = Printer_debug.frame_pool.blockSize;
-	PRINTF_DEBUG_ASSIGN(5) = Printer_debug.frame_pool.nTot;
-	PRINTF_DEBUG_ASSIGN(6) = Printer_debug.frame_pool.nFree;
-	PRINTF_DEBUG_ASSIGN(7) = Printer_debug.frame_pool.nMin;
+	PRINTF_DEBUG_ASSIGN(4) = Printer_debug.frame_pool->blockSize;
+	PRINTF_DEBUG_ASSIGN(5) = Printer_debug.frame_pool->nTot;
+	PRINTF_DEBUG_ASSIGN(6) = Printer_debug.frame_pool->nFree;
+	PRINTF_DEBUG_ASSIGN(7) = Printer_debug.frame_pool->nMin;
 	PRINTF_DEBUG_END()
 
 	PRINTF_DEBUG_START()
 	//             0123456789012----
 	PRINTF_DEBUG_("PTQ:         \r\n");
-	PRINTF_DEBUG_ASSIGN(4) = Printer_debug.tran_queue.q_len;
-	PRINTF_DEBUG_ASSIGN(5) = Printer_debug.tran_queue.n_used;
+	PRINTF_DEBUG_ASSIGN(4) = Printer_debug.tran_queue->q_len;
+	PRINTF_DEBUG_ASSIGN(5) = Printer_debug.tran_queue->n_used;
 	PRINTF_DEBUG_END()
 
-	QF_INT_ENABLE();
+	QF_INT_ENABLE();  // quit critical section
 
 	return;
 }
@@ -124,7 +124,7 @@ void super_loop_tasks_init(void) {
 }
 /*..........................................................................*/
 void super_loop_tasks(void) {
-	QF_INT_ENABLE();
+	QF_INT_ENABLE();  // MUST enable the interrupts when enter
 
 	/**
 	**************************************************************************
@@ -132,12 +132,13 @@ void super_loop_tasks(void) {
 	**************************************************************************
 	**/
 
-	WDT_CTRL = 7;  // clear WatchDog
+	// clear WatchDog
+	WATCHDOG_CLEAR();
 
 	// Background M_Fsm class
 	M_Fsm_runs();
 
-	QF_INT_DISABLE();  // must return with interrupt disable
+	QF_INT_DISABLE();  // MUST return with interrrupts disable
 	return;
 }
 
@@ -149,6 +150,8 @@ void super_loop_tasks(void) {
 void M_Fsm_ctors(void) {
 	// Printer_debug
 	Printer_debug_ctor(&Printer_debug);
+	// Receiver_debug
+	Receiver_debug_ctor(&Receiver_debug);
 
 	return;
 }
@@ -156,6 +159,8 @@ void M_Fsm_ctors(void) {
 void M_Fsm_runs(void) {
 	// Printer_debug
 	Printer_run(&Printer_debug);
+	// Receiver_debug
+	Receiver_run(&Receiver_debug);
 
 	return;
 }
@@ -164,34 +169,9 @@ void M_Fsm_ticks(void) {
 	// Printer_debug
 	M_Fsm_tick(&Printer_debug.super,
 		PRINTER_TICKS_PER_SEC);
-
-	return;
-}
-
-/**
-******************************************************************************
-							Polymorphism handlers
-******************************************************************************
-**/
-void Printer_data_upload(Printer *me) {
-	switch (me->printer_idx) {
-		case System_Idx_Uart_0: {
-			break;
-		}
-		// Printer Printer_debug;
-		case System_Idx_Uart_1: {
-			UART1_BUF =
-				me->tran_frame[me->printer_msg_len - me->tran_frame_cnt];
-
-			break;
-		}
-		case System_Idx_Uart_2: {
-			break;
-		}
-		default: {
-			break;
-		}
-	}
+	// Receiver_debug
+	M_Fsm_tick(&Receiver_debug.super,
+		RECEIVER_RUN_TICKS_PER_SEC);
 
 	return;
 }

@@ -254,18 +254,18 @@ extern uint_fast8_t QF_maxActive_;
 /*! Ready set of QF-nano. */
 // extern uint_fast8_t volatile QF_readySet_;
 
-#ifndef QF_LOG2
+// #ifndef QF_LOG2
 
-    /*! Lookup table for (log2(n) + 1), where n is the index into the table.
-    * This lookup delivers the 1-based number of the most significant 1-bit
-    * of a nibble.
-    */
-    extern uint8_t const Q_ROM QF_log2Lkup[16];
+    // /*! Lookup table for (log2(n) + 1), where n is the index into the table.
+    // * This lookup delivers the 1-based number of the most significant 1-bit
+    // * of a nibble.
+    // */
+    // extern uint8_t const Q_ROM QF_log2Lkup[16];
 
-    /*! Lookup table for ~(1 << (n - 1)), where n is the index into the table. */
-    extern uint8_t const Q_ROM QF_invPow2Lkup[9];
+    // /*! Lookup table for ~(1 << (n - 1)), where n is the index into the table. */
+    // extern uint8_t const Q_ROM QF_invPow2Lkup[9];
 
-#endif
+// #endif
 
 
 /****************************************************************************/

@@ -36,6 +36,23 @@ do {  \
 ******************************************************************************
                             super loop tasks
                     declare here, definition in the bsp
+BSP_init:
+    // statements ...
+	super_loop_tasks_init();  // before Chip_init.
+	Chip_init();
+    // statements ...
+
+QF_run:
+    // statements ...
+    for (;;) {
+        // just finish adjusting AO event queue or quit from idle
+        // (both with interrupts disable)
+
+        super_loop_tasks();
+
+        // QF_readySet_ checking for event dispatching or or idle entering.
+    }
+    // statements ...
 ******************************************************************************
 */
 void super_loop_tasks_init(void);
@@ -47,10 +64,8 @@ void super_loop_tasks(void);
                     self-defined log2 to perform clz
 ******************************************************************************
 */
-typedef uint32_t Q_ReadySet;
-extern Q_ReadySet volatile QF_readySet_;
-uint_fast8_t Q_LOG2(Q_ReadySet x);
-#define QF_LOG2(x)  (Q_LOG2((x)))
+#define QF_LOG2
+extern volatile QSet QF_readySet_;
 
 /*
 ******************************************************************************

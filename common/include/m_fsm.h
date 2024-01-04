@@ -75,29 +75,29 @@ do { \
 
 /**
 ******************************************************************************
-                            FSM state handle
+                        FSM state handle (internal)
 ******************************************************************************
 **/
-#define entry_exec_start_(me_) do { \
+#define M_FSM_ENTRY_EXEC_START_(me_) do { \
     /* should execute */ \
     if ((me_)->entry_is_ready != (M_Flag)0U) { \
         (me_)->entry_is_ready = 0x00;
-#define entry_exec_end_(me_) }} while (0);
+#define M_FSM_ENTRY_EXEC_END_(me_) }} while (0);
 
-#define state_process_begin_(me_)  do {
-#define state_process_end_(me_)    } while (0);
+#define M_FSM_STATE_PROCESS_BEGIN_(me_)  do {
+#define M_FSM_STATE_PROCESS_END_(me_)    } while (0);
 
-#define state_tran(target_state_) do { \
+#define M_Fsm_state_tran(target_state_) do { \
     /* tran and trigger the entry and the exit behaviour */ \
     (me->super).state = target_state_; \
     (me->super).entry_is_ready = 0xFF; \
     (me->super).exit_is_ready = 0xFF; \
 } while (0)
 
-#define exit_exec_start_(me_) do { \
+#define M_FSM_EXIT_EXEC_START_(me_) do { \
     if ((me_)->exit_is_ready != (M_Flag)0) { \
         (me_)->exit_is_ready = 0x00;
-#define exit_exec_end_(me_) }} while (0);
+#define M_FSM_EXIT_EXEC_END_(me_) }} while (0);
 
 /**
 ******************************************************************************

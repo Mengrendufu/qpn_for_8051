@@ -17,7 +17,35 @@ QActiveCB const Q_ROM QF_active[] = {
         Q_DIM(l_blinky_q_sto)}
 };
 
-/*..........................................................................*/
+/**
+******************************************************************************
+                            AO construct
+                                ||
+                                ||
+                                VV
+                        QF-nano static init
+                                ||
+                                ||
+                                VV
+                    BSP tasks init (BSP_init())
+                                ||
+                                ||
+                                VV
+                    BSP chip init (BSP_init())
+                                ||
+                                ||
+                                VV
+                            SM QHsm_init_
+                                ||
+                                ||
+                                VV
+                            QF_onStartup
+                                ||
+                                ||
+                                VV
+            background super loop tasks & event loop & on_idle
+******************************************************************************
+**/
 void main(void) {
     Blinky_ctor(&AO_Blinky); /* instantiate all Blinky AO */
 
